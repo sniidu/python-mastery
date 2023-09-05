@@ -1,7 +1,17 @@
 class Validator:
+    def __init__(self, name=None):
+        self.name = name
+
+    # With this, no need to name explicitly with overriding descriptor
+    def __set_name__(self, cls, name):
+        self.name = name
+
     @classmethod
     def check(cls, value):
         return value
+
+    def __set__(self, instance, value):
+        instance.__dict__[self.name] = self.check(value)
 
 
 class Typed(Validator):
@@ -56,7 +66,10 @@ class NonEmptyString(String, NonEmpty):
 
 class Stock:
     _types = [str, int, float]
-    __slots__ = ["name", "_shares", "_price"]
+
+    name = String()
+    shares = PositiveInteger()
+    price = PositiveFloat()
 
     def __init__(self, name, shares, price):
         self.name = name
@@ -65,7 +78,8 @@ class Stock:
 
     def __repr__(self):
         # Neat oneliner for this ought to be working
-        return f"{self.__class__.__name__}({','.join(str(getattr(self, s)) for s in self.__init__.__code__.co_names)})"
+        return f"{self.__class__.__name__}({','.join(str(getattr(self, s)) 
+            for s in self.__init__.__code__.co_names)})"
 
     def __eq__(self, other):
         return isinstance(other, Stock) and (
@@ -89,7 +103,6 @@ class Stock:
 
     @shares.setter
     def shares(self, value):
-        Typed.check(self._types[1])
         PositiveInteger.check(value)
         self._shares = value
 
@@ -100,7 +113,7 @@ class Stock:
     @price.setter
     def price(self, value):
         Typed.check(self._types[2])
-        PositiveInteger.check(value)
+        Positive.check(value)
         self._price = value
 
     def sell(self, num_of_shares: int):
