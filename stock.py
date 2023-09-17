@@ -79,4 +79,3 @@ def read_portfolio(filename, cls=Stock):
 
 if __name__ == "__main__":
     p = read_portfolio("Data/portfolio.csv")
-p = read_portfolio("Data/portfolio.csv")
