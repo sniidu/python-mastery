@@ -1,5 +1,16 @@
+import sys
+
+
 class Structure:
     _fields = ()
+
+    @staticmethod
+    def _init():
+        # Reaches stack of another function and examines its variables
+        locs = sys._getframe(1).f_locals
+        self = locs.pop("self")
+        for name, val in locs.items():
+            setattr(self, name, val)
 
     def __init__(self, *args) -> None:
         if len(self._fields) != len(args):
@@ -8,11 +19,17 @@ class Structure:
         for field, arg in zip(self._fields, args):
             self.__setattr__(field, arg)
 
+    def __repr__(self):
+        return f"""{self.__class__.__name__}({','.join(str(getattr(self, s)) for s in self._fields)})"""
 
-class Stock(Structure):
-    _fields = ("name", "shares", "price")
+    def __setattr__(self, __name, __value) -> None:
+        if __name.startswith("_") or __name in self._fields:
+            super().__setattr__(__name, __value)
+        else:
+            e = f"No attribute {__name}"
+            raise AttributeError(e)
 
 
-if __name__ == "__main__":
-    s = Stock("GOOG", 199, 34.23)
-    s2 = Stock("GOOG", 34.23)
+# if __name__ == "__main__":
+# s = Stock("GOOG", 199, 34.23)
+# s2 = Stock("GOOG", 34.23)

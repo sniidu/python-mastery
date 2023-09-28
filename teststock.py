@@ -23,6 +23,23 @@ class TestStock(unittest.TestCase):
         # eq method
         self.assertEqual(s == s2, False)
 
+    def test_bad_shares(self):
+        s = stock.Stock("GOOG", 100, 490.1)
+        with self.assertRaises(TypeError):
+            s.price = "arts"
+
+        with self.assertRaises(ValueError):
+            s.price = -30.234
+
+        with self.assertRaises(TypeError):
+            s.shares = 234.234
+
+        with self.assertRaises(ValueError):
+            s.shares = -30
+
+        with self.assertRaises(AttributeError):
+            s.arst = -30
+
 
 if __name__ == "__main__":
     unittest.main()
