@@ -1,3 +1,4 @@
+import inspect
 import sys
 
 
@@ -29,7 +30,7 @@ class Structure:
             e = f"No attribute {__name}"
             raise AttributeError(e)
 
-
-# if __name__ == "__main__":
-# s = Stock("GOOG", 199, 34.23)
-# s2 = Stock("GOOG", 34.23)
+    @classmethod
+    def set_fields(cls):
+        sig = inspect.signature(cls)
+        cls._fields = tuple(sig.parameters)
